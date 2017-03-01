@@ -9,25 +9,29 @@ output: ioslides_presentation
 knitr::opts_chunk$set(echo = FALSE, comment = NULL, warning = FALSE)
 ```
 
-## The Robey data frame
+## Toy data
 
 ```{r, message = FALSE}
-library(ggplot2)
 library(plotly)
-require(car)
-data(Robey, package = 'car')
+set.seed(12345)
+group <- sample(c("blue", "red", "yellow"), size=100, replace = TRUE)
+x <- rnorm(100, mean = 50, sd=10)
+x[group=="blue"] <- x[group=="blue"] + runif(length(x[group=="blue"]), min=5, max=10)
+x[group=="red"] <- x[group=="red"] - runif(length(x[group=="red"]), min=5, max=10)
+
+y <- rnorm(100, mean = 10, sd=4) + x/2
+y[group=="blue"] <- y[group=="blue"]*.7 + runif(length(x[group=="blue"]), min=1, max=14)
+y[group=="red"] <- y[group=="red"]*1.3 - runif(length(x[group=="red"]), min=0, max=2)
+
+z <- c()
+z[group=="blue"] <- rnorm(length(x[group=="blue"]), mean = 8, sd=2)
+z[group=="red"] <- rnorm(length(x[group=="red"]), mean = 6, sd=1)
+z[group=="yellow"] <- rnorm(length(x[group=="yellow"]), mean = 10, sd=3)
 ```
 
 ```{r}
-g <- ggplot(data = Robey, aes(x = contraceptors, y = tfr)) +
-        geom_point(aes(text = paste('Country:', rownames(Robey)), 
-                       fill=region, size=2), colour="black", shape=21) +
-        ylab("Total fertility rate") +
-        xlab("% contraceptors among married women") + 
-        theme(legend.title=element_blank())
-
-ggplotly(g, tooltip = c("text", "x", "y")) %>%
-        layout(title = 'Fertility and Contraception')
+plot_ly(x = x, y = y, z = z, type = "scatter3d", mode = "markers", 
+        color = group, colors=c("blue", "red", "yellow"))
 ```
 
 
